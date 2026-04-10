@@ -6,6 +6,7 @@ import patientRoutes from "./routes/patient.routes.js";
 import doctorRoutes from "./routes/doctor.routes.js";
 import appointmentRoutes from "./routes/appointment.routes.js";
 import medicalRecordRoutes from "./routes/medicalRecord.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 import errorHandler from "./middleware/error.middleware.js";
 
 dotenv.config();
@@ -34,6 +35,9 @@ app.use("/api/medical-records", medicalRecordRoutes);
 app.get("/", (req, res) => {
   res.send("API is running...");
 });
+
+// ==== Use auth routes ====
+app.use("/api/auth", authRoutes);
 
 // ==== 404 Route handler ====
 app.use((req, res, next) => {
