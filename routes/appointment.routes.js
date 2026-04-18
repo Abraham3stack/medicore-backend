@@ -18,6 +18,6 @@ router.get("/:id", protect, authorize("admin", "doctor"), getAppointmentById);
 
 router.put("/:id", protect, authorize("admin"), updateAppointment);
 
-router.delete("/:id", protect, authorize("admin"), deleteAppointment);
+router.delete("/:id", protect, authorize("admin", "patient"), deleteAppointment);
 
 export default router;
