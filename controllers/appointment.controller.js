@@ -8,30 +8,28 @@ import mongoose from "mongoose";
 // ==== Create appointment controller ====
 export const createAppointment = asyncHandler(async (req, res) => {
   const {
-    patient,
     doctor, 
     appointmentDate,
     reason
   } = req.body;
 
   // Check if all required fields are provided
-  if (!patient || !doctor || !appointmentDate) {
-    throw new AppError("Patient, doctor and appointment date are required", 400);
+  if (!doctor || !appointmentDate) {
+    throw new AppError("Doctor and appointment date are required", 400);
   }
 
-  // Validate ObjectId format(checks if patient & doctor are valid)
-  if (!mongoose.Types.ObjectId.isValid(patient)) {
-    throw new AppError("Invalid patient ID", 400);
-  }
+  // Get patient linked to logged-in user
+  const existingPatient = await Patient.findOne({ user: req.user.id });
 
-  if (!mongoose.Types.ObjectId.isValid(doctor)) {
-    throw new AppError("Invalid doctor ID", 400);
-  }
-
-  // Check if patient exists
-  const existingPatient = await Patient.findById(patient);
   if (!existingPatient) {
     throw new AppError("Patient not found", 404);
+  }
+
+  const patient = existingPatient._id;
+
+  // Validate ObjectId format(checks if doctor is valid)
+  if (!mongoose.Types.ObjectId.isValid(doctor)) {
+    throw new AppError("Invalid doctor ID", 400);
   }
 
   // Check if doctor exists
