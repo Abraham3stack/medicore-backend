@@ -12,7 +12,7 @@ const router = express.Router();
 
 router.post("/", protect, authorize("patient"), createAppointment);
 
-router.get("/", protect, authorize("admin", "doctor"), getAppointments);
+router.get("/", protect, authorize("admin", "doctor", "patient"), getAppointments);
 
 router.get("/:id", protect, authorize("admin", "doctor"), getAppointmentById);
 
