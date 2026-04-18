@@ -3,7 +3,7 @@ import asyncHandler from "../middleware/async.middleware.js";
 import AppError from "../utils/errors.js";
 import mongoose from "mongoose";
 
-// Create Doctor Controller
+// ==== Create Doctor Controller ====
 export const createDoctor = asyncHandler(async (req, res) => {
   const {
     firstName,
@@ -24,11 +24,11 @@ export const createDoctor = asyncHandler(async (req, res) => {
   });
 });
 
-// Get all doctors Contoller
+// ==== Get all doctors Contoller ====
 export const getDoctors = asyncHandler(async (req, res) => {
 
   // Search doctors
-  const { specialization, search } = req.query;
+  const { specialization, search, availability } = req.query;
 
   let query = {};
 
@@ -43,6 +43,10 @@ export const getDoctors = asyncHandler(async (req, res) => {
     ];
   }
 
+  if (availability) {
+    query.availability = availability;
+  }
+
   const doctors = await Doctor.find(query).sort({ createdAt: -1 });
 
   res.status(200).json({
@@ -52,7 +56,28 @@ export const getDoctors = asyncHandler(async (req, res) => {
   });
 });
 
-// Update Doctor
+// ==== Get single doctor ====
+export const getDoctorById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Validate id
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError("Invalid doctor ID", 400);
+  }
+
+  const doctor = await Doctor.findById(id);
+
+  if (!doctor) {
+    throw new AppError("Doctor not found", 404);
+  }
+
+  res.status(200).json({
+    success: true,
+    data: doctor,
+  });
+});
+
+// ==== Update Doctor ====
 export const updateDoctor = asyncHandler(async (req, res) => {
 
   // Validate objectId for update
@@ -75,7 +100,7 @@ export const updateDoctor = asyncHandler(async (req, res) => {
   });
 });
 
-// Delete Doctor
+// ==== Delete Doctor ====
 export const deleteDoctor = asyncHandler(async (req, res) => {
 
   // Validate objectId for delete

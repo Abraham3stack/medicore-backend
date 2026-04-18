@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import asyncHandler from "../middleware/async.middleware.js";
 import AppError from "../utils/errors.js";
+import Patient from "../models/patient.model.js";
 
 // ==== Register user ====
 export const registerUser = asyncHandler(async (req, res) => {
@@ -25,6 +26,17 @@ export const registerUser = asyncHandler(async (req, res) => {
     password: hashedPassword,
     role: role ? role : "patient",
   });
+
+  // Create patient profile if user is a patient
+  if (user.role === "patient") {
+    await Patient.create({
+      user: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      dateOfBirth: new Date(), // temporary default
+      gender: "other", // temporary default
+    });
+  }
 
   // Generate JWT Token
   const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "7d" });

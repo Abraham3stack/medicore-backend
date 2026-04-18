@@ -32,13 +32,14 @@ const doctorSchema = new mongoose.Schema(
     },
 
     availability: {
-      type: [String],
-      default: [],
+      type: String,
+      enum: ["available", "unavailable"],
+      default: "available",
     },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 const Doctor = mongoose.model("Doctor", doctorSchema);

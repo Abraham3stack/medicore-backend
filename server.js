@@ -19,6 +19,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Health check
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success:true,
+    message: "Medicore API is running 🚀",
+  });
+});
+
 // ==== Patient Routes ====
 app.use("/api/patients", patientRoutes);
 
@@ -30,11 +38,6 @@ app.use("/api/appointments", appointmentRoutes);
 
 // ==== Medical Record Routes ====
 app.use("/api/medical-records", medicalRecordRoutes);
-
-// ==== Health check ====
-app.get("/", (req, res) => {
-  res.send("API is running...");
-});
 
 // ==== Use auth routes ====
 app.use("/api/auth", authRoutes);

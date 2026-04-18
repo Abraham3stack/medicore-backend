@@ -5,16 +5,20 @@ import {
   getMedicalRecords,
   updateMedicalRecord,
   deleteMedicalRecord,
+  getMedicalRecordById,
 } from "../controllers/medicalRecord.controller.js"; 
+import { protect, authorize } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-router.post("/", createMedicalRecord);
+router.post("/", protect, authorize("doctor"), createMedicalRecord);
 
-router.get("/", getMedicalRecords);
+router.get("/", protect, authorize("admin", "doctor"), getMedicalRecords);
 
-router.put("/:id", updateMedicalRecord);
+router.get("/:id", protect, authorize("admin", "doctor"), getMedicalRecordById);
 
-router.delete("/:id", deleteMedicalRecord);
+router.put("/:id", protect, authorize("doctor"), updateMedicalRecord);
+
+router.delete("/:id", protect, authorize("admin"), deleteMedicalRecord);
 
 export default router;

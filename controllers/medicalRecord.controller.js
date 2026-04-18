@@ -4,7 +4,7 @@ import asyncHandler from "../middleware/async.middleware.js";
 import AppError from "../utils/errors.js";
 import mongoose from "mongoose";
 
-// Create medical record
+// ==== Create medical record ====
 export const createMedicalRecord = asyncHandler(async (req, res) => {
   const {
     patient,
@@ -42,7 +42,7 @@ export const createMedicalRecord = asyncHandler(async (req, res) => {
   });
 });
 
-// Get all medical records
+// ==== Get all medical records ====
 export const getMedicalRecords = asyncHandler(async (req, res) => {
 
   // search medicalRecords
@@ -67,7 +67,31 @@ export const getMedicalRecords = asyncHandler(async (req, res) => {
   });
 });
 
-// Update medical record
+// ==== Get single medical record ====
+export const getMedicalRecordById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Validate ID
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError("Invalid record ID", 400);
+  }
+
+  const record = await MedicalRecord.findById(id).populate(
+    "patient",
+    "firstName lastName email"
+  );
+
+  if (!record) {
+    throw new AppError("Medical record not found", 404);
+  }
+
+  res.status(200).json({
+    success: true,
+    data: record,
+  });
+});
+
+// ==== Update medical record ====
 export const updateMedicalRecord = asyncHandler(async (req, res) => {
 
   // Validate objectId for update
@@ -91,7 +115,7 @@ export const updateMedicalRecord = asyncHandler(async (req, res) => {
   });
 });
 
-// Delete medical record
+// ==== Delete medical record ====
 export const deleteMedicalRecord = asyncHandler(async (req, res) => {
   
   // Validate objectId for delete

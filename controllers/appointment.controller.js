@@ -5,7 +5,7 @@ import asyncHandler from "../middleware/async.middleware.js";
 import AppError from "../utils/errors.js";
 import mongoose from "mongoose";
 
-// Create appointment controller
+// ==== Create appointment controller ====
 export const createAppointment = asyncHandler(async (req, res) => {
   const {
     patient,
@@ -16,7 +16,7 @@ export const createAppointment = asyncHandler(async (req, res) => {
 
   // Check if all required fields are provided
   if (!patient || !doctor || !appointmentDate) {
-    throw new AppError("Please provide all required fields", 400);
+    throw new AppError("Patient, doctor and appointment date are required", 400);
   }
 
   // Validate ObjectId format(checks if patient & doctor are valid)
@@ -40,6 +40,21 @@ export const createAppointment = asyncHandler(async (req, res) => {
     throw new AppError("Doctor not found", 404);
   }
 
+  // Check doctor availability
+  if (existingDoctor.availability !== "available") {
+    throw new AppError("Doctor is not available for booking", 400);
+  }
+
+  // Check for appointment conflict (same doctor & time)
+  const conflict = await Appointment.findOne({
+    doctor,
+    appointmentDate,
+  });
+
+  if (conflict) {
+    throw new AppError("Doctor already has an appointment at this time", 400);
+  }
+
   const appointment = await Appointment.create({
     patient,
     doctor,
@@ -53,7 +68,7 @@ export const createAppointment = asyncHandler(async (req, res) => {
   });
 });
 
-// Get all appointments
+// ==== Get all appointments ====
 export const getAppointments = asyncHandler(async (req, res) => {
 
   // Search appointments
@@ -84,7 +99,30 @@ export const getAppointments = asyncHandler(async (req, res) => {
   });
 });
 
-// Update appointment
+// ==== Get single appointment ====
+export const getAppointmentById = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  // Validate ID
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new AppError("Invalid appointment ID", 400);
+  }
+
+  const appointment = await Appointment.findById(id)
+    .populate("patient", "firstName lastName")
+    .populate("doctor", "firstName lastName specialization");
+
+  if (!appointment) {
+    throw new AppError("Appointment not found", 404);
+  }
+
+  res.status(200).json({
+    success: true,
+    data: appointment,
+  });
+});
+
+// ==== Update appointment ====
 export const updateAppointment = asyncHandler(async (req, res) => {
 
   // Validate objectId for update
@@ -108,7 +146,7 @@ export const updateAppointment = asyncHandler(async (req, res) => {
   });
 });
 
-// Delete appointment
+// ==== Delete appointment ====
 export const deleteAppointment = asyncHandler(async (req, res) => {
 
   // Validate objectId for delete
