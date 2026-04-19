@@ -61,8 +61,8 @@ export const getAppointments = asyncHandler(async (req, res) => {
 
   let query = {};
 
+  // Patient restriction
   if (req.user.role === "patient") {
-
     const patient = await Patient.findOne({ user: req.user.id });
 
     if (!patient) {
@@ -70,6 +70,17 @@ export const getAppointments = asyncHandler(async (req, res) => {
     }
 
     query.patient = patient._id;
+  }
+
+  // Doctor restriction
+  if (req.user.role === "doctor") {
+    const doctor = await Doctor.findOne({ user: req.user.id });
+
+    if (!doctor) {
+      throw new AppError("Doctor not found", 404);
+    }
+
+    query.doctor = doctor._id;
   }
 
   if (status) {

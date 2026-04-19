@@ -36,6 +36,10 @@ const doctorSchema = new mongoose.Schema(
       enum: ["available", "unavailable"],
       default: "available",
     },
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }
   },
   {
     timestamps: true,
