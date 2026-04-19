@@ -27,3 +27,13 @@ export const updateUserRole = asyncHandler(async (req, res) => {
     data: user,
   });
 });
+
+// ==== Get all users (Admin only) ====
+export const getUsers = asyncHandler(async (req, res) => {
+  const users = await User.find().select("-password");
+
+  res.status(200).json({
+    success: true,
+    data: users,
+  });
+});
