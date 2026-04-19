@@ -61,6 +61,17 @@ export const getAppointments = asyncHandler(async (req, res) => {
 
   let query = {};
 
+  if (req.user.role === "patient") {
+
+    const patient = await Patient.findOne({ user: req.user.id });
+
+    if (!patient) {
+      throw new AppError("Patient not found", 404);
+    }
+
+    query.patient = patient._id;
+  }
+
   if (status) {
     query.status = status;
   }
