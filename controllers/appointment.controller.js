@@ -158,6 +158,11 @@ export const deleteAppointment = asyncHandler(async (req, res) => {
     throw new AppError("Appointment not found", 404);
   }
 
+  // Make doctor available again
+  await Doctor.findByIdAndUpdate(appointment.doctor, {
+    availability: "available",
+  });
+
   res.status(200).json({
     success: true,
     message: "Appointment deleted successfully",

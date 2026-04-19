@@ -25,8 +25,6 @@ export const protect = asyncHandler(async (req, res, next) => {
   // Attatch user info to request
   req.user = decoded;
 
-  console.log("DECODED USER:", decoded);
-
   next();
 });
 
