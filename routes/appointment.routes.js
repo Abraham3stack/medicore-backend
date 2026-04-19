@@ -16,7 +16,7 @@ router.get("/", protect, authorize("admin", "doctor", "patient"), getAppointment
 
 router.get("/:id", protect, authorize("admin", "doctor"), getAppointmentById);
 
-router.put("/:id", protect, authorize("admin"), updateAppointment);
+router.put("/:id", protect, authorize("admin", "doctor"), updateAppointment);
 
 router.delete("/:id", protect, authorize("admin", "patient"), deleteAppointment);
 
