@@ -38,20 +38,7 @@ export const createAppointment = asyncHandler(async (req, res) => {
     throw new AppError("Doctor not found", 404);
   }
 
-  // Check doctor availability
-  if (existingDoctor.availability !== "available") {
-    throw new AppError("Doctor is not available for booking", 400);
-  }
 
-  // Check for appointment conflict (same doctor & time)
-  const conflict = await Appointment.findOne({
-    doctor,
-    appointmentDate,
-  });
-
-  if (conflict) {
-    throw new AppError("Doctor already has an appointment at this time", 400);
-  }
 
   const appointment = await Appointment.create({
     patient,
