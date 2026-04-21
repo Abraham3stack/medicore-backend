@@ -1,5 +1,5 @@
 import express from "express";
-import { updateUserRole, getUsers } from "../controllers/user.controller.js";
+import { updateUserRole, getUsers, getStats } from "../controllers/user.controller.js";
 import { protect, authorize } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
@@ -9,5 +9,8 @@ router.put("/:id/role", protect, authorize("admin"), updateUserRole);
 
 // Get all users (admin only)
 router.get("/", protect, authorize("admin"), getUsers);
+
+// Get stats
+router.get("/stats", getStats);
 
 export default router;

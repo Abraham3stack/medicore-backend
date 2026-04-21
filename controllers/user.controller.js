@@ -63,3 +63,22 @@ export const getUsers = asyncHandler(async (req, res) => {
     data: users,
   });
 });
+
+// Get Stats
+export const getStats = asyncHandler(async (req, res) => {
+  const totalUsers = await User.countDocuments();
+  const totalDoctors = await User.countDocuments({ role: "doctor" });
+  const totalPatients = await User.countDocuments({ role: "patient" });
+
+  const Appointment = (await import("../models/appointment.model.js")).default;
+  const totalAppointments = await Appointment.countDocuments();
+
+  res.status(200).json({
+    data: {
+      totalUsers,
+      totalDoctors,
+      totalPatients,
+      totalAppointments,
+    },
+  });
+});
