@@ -1,6 +1,3 @@
-
-
-
 # 🏥 MediCore Backend API
 
 A full-stack hospital management backend built with **Node.js, Express, MongoDB (MERN)**.  
