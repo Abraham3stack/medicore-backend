@@ -59,7 +59,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   }
 
   // Check if user exists
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password");
   if (!user) {
     throw new AppError("Invalid credentials", 401);
   }
