@@ -46,9 +46,11 @@ export const updateUserRole = asyncHandler(async (req, res) => {
     await Doctor.findOneAndDelete({ user: user._id });
   }
 
+  const updatedUser = await User.findById(id).select("-password");
+
   res.status(200).json({
     success: true,
-    data: user,
+    data: updatedUser,
   });
 });
 
