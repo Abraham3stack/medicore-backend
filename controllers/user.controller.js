@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import asyncHandler from "../middleware/async.middleware.js";
 import AppError from "../utils/errors.js";
+import Doctor from "../models/doctor.model.js";
 
 // update user role (Admin only)
 export const updateUserRole = asyncHandler(async (req, res) => {
@@ -19,8 +20,31 @@ export const updateUserRole = asyncHandler(async (req, res) => {
     throw new AppError("User not found", 404);
   }
 
+  const previousRole = user.role;
+
   user.role = role;
   await user.save();
+
+  // If role is doctor, ensure doctor profile exists
+  if (role === "doctor") {
+    const existingDoctor = await Doctor.findOne({ user: user._id });
+
+    if (!existingDoctor) {
+      await Doctor.create({
+        user: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        specialization: "General",
+        availability: "available",
+      });
+    }
+  }
+
+  // If role changed FROM doctor to something else, remove doctor profile
+  if (previousRole === "doctor" && role !== "doctor") {
+    await Doctor.findOneAndDelete({ user: user._id });
+  }
 
   res.status(200).json({
     success: true,
