@@ -26,20 +26,9 @@ export const registerUser = asyncHandler(async (req, res) => {
 
 // ==== Login user ====
 export const loginUser = asyncHandler(async (req, res) => {
-  const parsed = loginSchema.safeParse(req.body);
-
-  // Validate input
-  if (!parsed.success) {
-    return res.status(400).json({
-      errors: parsed.error?.issues?.map((err) => ({
-        field: err.path[0],
-        message: err.message,
-      })) || ["Invalid input"],
-    });
-  }
 
   // Extract data
-  const { email, password } = req.body;
+  const { email, password } = req.validatedData;
 
   // Call login service
   const { user, token } = await loginUserService(email, password);
