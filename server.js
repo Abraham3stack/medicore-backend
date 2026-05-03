@@ -9,6 +9,8 @@ import medicalRecordRoutes from "./routes/medicalRecord.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import userRoutes from "./routes/user.routes.js";
 import errorHandler from "./middleware/error.middleware.js";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 
 dotenv.config();
 
@@ -16,7 +18,19 @@ connectDB();
 
 const app = express();
 
+// Limiter
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15mins
+  max: 100, // limit each IP
+  message: {
+    success: false,
+    message: "Too many requests, please try again later",
+  },
+});
+
 // ==== Middleware ====
+app.use(helmet());
+
 app.use(
   cors({
     origin: [
@@ -26,7 +40,11 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
+
+app.use(express.json({ limit: "10kb" }));
+
+// Rate limit
+app.use("/api", limiter);
 
 // Health check
 app.get("/", (req, res) => {
