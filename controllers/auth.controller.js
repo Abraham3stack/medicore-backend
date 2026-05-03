@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import asyncHandler from "../middleware/async.middleware.js";
 import AppError from "../utils/errors.js";
 import Patient from "../models/patient.model.js";
+import { loginSchema } from "../src/validations/auth.validation.js";
 
 // ==== Register user ====
 export const registerUser = asyncHandler(async (req, res) => {
@@ -51,12 +52,20 @@ export const registerUser = asyncHandler(async (req, res) => {
 
 // ==== Login user ====
 export const loginUser = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  const parsed = loginSchema.safeParse(req.body);
 
   // Validate input
-  if (!email || !password) {
-    throw new AppError("Email and password are required", 400);
+  if (!parsed.success) {
+    return res.status(400).json({
+      errors: parsed.error?.issues?.map((err) => ({
+        field: err.path[0],
+        message: err.message,
+      })) || ["Invalid input"],
+    });
   }
+
+  // Extract data
+  const { email, password } = req.body;
 
   // Check if user exists
   const user = await User.findOne({ email }).select("+password");

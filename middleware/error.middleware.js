@@ -1,9 +1,22 @@
 const errorHandler = (err, req, res, next) => {
   console.error(err);
 
-  res.status(err.statusCode || 500).json({
+  const statusCode = err.statusCode || 500;
+
+  // Known (operational) errors
+  if (err.isOperational) {
+    return res.status(statusCode).json({
+      success: false,
+      status: err.status,
+      message: err.message,
+    });
+  }
+
+  // Unknown errors (programming or unexpected)
+  return res.status(500).json({
     success: false,
-    message: err.message || "Internal Server Error",
+    status: "error",
+    message: "Something went wrong",
   });
 };
 

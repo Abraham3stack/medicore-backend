@@ -144,6 +144,7 @@ http://localhost:5001
 ## 🧠 Author
 
 Abraham Ogbu
+Full-stack Developer
 
 ---
 

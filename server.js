@@ -62,11 +62,11 @@ app.use((req, res, next) => {
   });
 });
 
+// ==== Error Middleware ====
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-// ==== Error Middleware ====
-app.use(errorHandler);
